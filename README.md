@@ -6,20 +6,6 @@ O projeto fornece uma estrutura inicial com roteamento, controllers, views, conf
 
 ## Instalação
 
-### Via Composer
-
-```bash
-composer create-project jairo/appfoundry nome-do-projeto
-cd nome-do-projeto
-```
-
-Links do pacote e do repositório serão adicionados aqui:
-
-- Composer: `LINK_DO_COMPOSER`
-- GitHub: `https://github.com/JairoJeffersont/AppFoundry`
-
-### Clonando o repositório
-
 ```bash
 git clone https://github.com/JairoJeffersont/AppFoundry nome-do-projeto
 cd nome-do-projeto
