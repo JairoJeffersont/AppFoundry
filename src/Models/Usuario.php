@@ -17,4 +17,11 @@ class Usuario extends Model
     protected $hidden = [
         'senha',
     ];
+
+    public function setSenhaAttribute($value): void
+    {
+        $this->attributes['senha'] = password_get_info($value)['algo'] === null
+            ? password_hash($value, PASSWORD_DEFAULT)
+            : $value;
+    }
 }

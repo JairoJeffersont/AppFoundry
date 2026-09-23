@@ -84,7 +84,19 @@ Execute o conteúdo do arquivo no banco configurado no `.env` antes de utilizar 
 mysql -u root -p web < database.db
 ```
 
-O campo `senha` está oculto na serialização do model, mas as senhas ainda devem ser armazenadas usando hash na aplicação, e nunca em texto puro.
+O model possui um mutator que aplica `password_hash` automaticamente sempre que uma senha em texto é atribuída ao atributo `senha`. Valores que já possuem hash não são hashados novamente. Além disso, o campo fica oculto na serialização do model.
+
+Exemplo:
+
+```php
+$usuario = new Usuario();
+$usuario->nome = 'Maria';
+$usuario->email = 'maria@example.com';
+$usuario->senha = 'senha-secreta';
+$usuario->save();
+```
+
+A senha deve ser verificada com `password_verify` e nunca deve ser armazenada em texto puro.
 
 ## Criando um novo projeto
 
