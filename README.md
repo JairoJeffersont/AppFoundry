@@ -16,12 +16,12 @@ cd nome-do-projeto
 Links do pacote e do repositório serão adicionados aqui:
 
 - Composer: `LINK_DO_COMPOSER`
-- GitHub: `LINK_DO_GITHUB`
+- GitHub: `https://github.com/JairoJeffersont/AppFoundry`
 
 ### Clonando o repositório
 
 ```bash
-git clone LINK_DO_GITHUB nome-do-projeto
+git clone https://github.com/JairoJeffersont/AppFoundry nome-do-projeto
 cd nome-do-projeto
 composer install
 ```
