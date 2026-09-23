@@ -1,5 +1,5 @@
 {
-    "name": "jairo/appfoundry",
+    "name": "jairojeffersont/appfoundry",
     "description": "Esqueleto básico de uma aplicação PHP desenvolvida com Slim Framework, Twig e Eloquent ORM.",
     "type": "project",
     "license": "mit",
