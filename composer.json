@@ -1,0 +1,26 @@
+{
+    "name": "jairo/appfoundry",
+    "description": "Esqueleto básico de uma aplicação PHP desenvolvida com Slim Framework, Twig e Eloquent ORM.",
+    "type": "project",
+    "license": "mit",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jairo Jefferson Teixeira Dos Santos",
+            "email": "jairojeffersont@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "slim/slim": "4.*",
+        "nyholm/psr7": "^1.8",
+        "nyholm/psr7-server": "^1.1",
+        "vlucas/phpdotenv": "^5.7",
+        "illuminate/database": "^13.32",
+        "slim/twig-view": "^3.4"
+    }
+}
