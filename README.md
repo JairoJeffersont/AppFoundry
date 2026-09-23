@@ -58,12 +58,33 @@ Antes da publicação, revise também as variáveis do `.env`, principalmente `A
 
 ```text
 config/                 Configurações do banco e do Twig
+database.db             Script SQL de exemplo para criar a tabela usuarios
 public/index.php        Ponto de entrada da aplicação
 src/Controllers/        Controllers
+src/Models/             Models Eloquent
 src/Routes/             Rotas da aplicação
 src/Views/              Templates Twig
 .env.example             Exemplo de variáveis de ambiente
 ```
+
+## Exemplo de model e banco de dados
+
+O projeto inclui o model `App\Models\Usuario` em `src/Models/Usuario.php`. Ele representa a tabela `usuarios` e possui os campos:
+
+- `id`
+- `nome`
+- `email`
+- `senha`
+
+O arquivo `database.db` contém um script SQL simples para criar essa tabela, incluindo também `created_at` e `updated_at`, usados automaticamente pelo Eloquent.
+
+Execute o conteúdo do arquivo no banco configurado no `.env` antes de utilizar o model. Por exemplo, com MySQL:
+
+```bash
+mysql -u root -p web < database.db
+```
+
+O campo `senha` está oculto na serialização do model, mas as senhas ainda devem ser armazenadas usando hash na aplicação, e nunca em texto puro.
 
 ## Criando um novo projeto
 
