@@ -15,5 +15,5 @@ senha: senha123
 
 */
 
-INSERT INTO usuarios (nome, email, senha)
-VALUES ('Exemplo Usuario', 'exemplo@usuario.com', '$2y$10$Fy2eWTUImKtcqu3K.TZmL.NZMOFo2vAYi5NrS9UlnRTQdtSeuyhfC');
+INSERT INTO usuarios (nome, email, senha, created_at, updated_at)
+VALUES ('Exemplo Usuario', 'exemplo@usuario.com', '$2y$10$Fy2eWTUImKtcqu3K.TZmL.NZMOFo2vAYi5NrS9UlnRTQdtSeuyhfC', current_timestamp, current_timestamp);
