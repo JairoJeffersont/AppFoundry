@@ -75,6 +75,7 @@ class UsuarioService {
      * @throws RegistroDuplicadoException Lançada caso o e-mail informado já exista.
      */
     public function criarUsuario(array $dados): Usuario {
+
         if (Usuario::where('email', $dados['email'])->exists()) {
             throw new RegistroDuplicadoException('Já existe um usuário cadastrado com este e-mail.');
         }
