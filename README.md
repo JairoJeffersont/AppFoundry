@@ -1,8 +1,12 @@
 # AppFoundry
 
-Esqueleto básico para iniciar novos projetos PHP com [Slim Framework](https://www.slimframework.com/), [Eloquent ORM](https://laravel.com/docs/eloquent) e [Twig](https://twig.symfony.com/).
+Aplicação PHP de exemplo com autenticação e cadastro de usuários, construída com [Slim Framework 4](https://www.slimframework.com/), [Eloquent ORM](https://laravel.com/docs/eloquent) e [Twig](https://twig.symfony.com/). O projeto também usa PHP-Dotenv para configuração por ambiente e Easy Logger para registrar erros da aplicação.
 
-O projeto fornece uma estrutura inicial com roteamento, controllers, views, configuração de banco de dados e carregamento de variáveis de ambiente.
+## Requisitos
+
+- PHP compatível com as dependências instaladas pelo Composer, com PDO e o driver do banco escolhido habilitados.
+- Composer.
+- MySQL (ou outro banco compatível com a configuração do Eloquent).
 
 ## Instalação
 
@@ -10,17 +14,10 @@ O projeto fornece uma estrutura inicial com roteamento, controllers, views, conf
 git clone https://github.com/JairoJeffersont/AppFoundry nome-do-projeto
 cd nome-do-projeto
 composer install
-```
-
-## Configuração
-
-Copie o arquivo de ambiente e ajuste os valores da aplicação e do banco de dados:
-
-```bash
 cp .env.example .env
 ```
 
-Principais variáveis disponíveis:
+Edite o `.env` com os dados da sua aplicação e do banco. As variáveis reconhecidas são:
 
 ```dotenv
 APP_ENV=development
@@ -32,82 +29,77 @@ DB_PORT=3306
 DB_DATABASE=web
 DB_USERNAME=root
 DB_PASSWORD=
+DB_CHARSET=utf8mb4
+DB_COLLATION=utf8mb4_unicode_ci
 ```
 
-## Executando a aplicação
+O arquivo `config/database.php` usa esses valores para configurar o Eloquent; se não forem informados, aplica os padrões mostrados acima.
 
-Inicie o servidor de desenvolvimento apontando o document root para a pasta `public`:
+## Banco de dados
+
+Crie o banco indicado por `DB_DATABASE` e importe [`database.sql`](database.sql). O script cria a tabela `usuarios`, com `id`, `nome`, `email`, `senha`, `created_at` e `updated_at`, e insere uma conta de demonstração:
+
+| E-mail | Senha |
+| --- | --- |
+| `exemplo@usuario.com` | `senha123` |
+
+Com MySQL e as configurações padrão:
+
+```bash
+mysql -u root -p web < database.sql
+```
+
+O model `App\Models\Usuario` usa a tabela `usuarios`. Ao atribuir uma senha em texto puro ao atributo `senha`, o model a transforma com `password_hash`; no login, o serviço valida a senha usando `password_verify`.
+
+## Executar localmente
+
+Na raiz do projeto, inicie o servidor PHP com `public` como document root:
 
 ```bash
 php -S localhost:8000 -t public
 ```
 
-A aplicação estará disponível em <http://localhost:8000>.
+Acesse <http://localhost:8000/login>. O formulário de login já vem preenchido com as credenciais de demonstração. Também é possível criar outra conta em `/novo-usuario`.
 
-## Hospedagem em um servidor web
+## Rotas disponíveis
 
-Para publicar a aplicação em uma hospedagem ou servidor de produção, consulte a documentação oficial do Slim Framework 4 sobre servidores web:
+| Método | Caminho | Acesso | Comportamento |
+| --- | --- | --- | --- |
+| `GET` | `/login` | Público | Exibe o formulário de login. |
+| `POST` | `/login` | Público | Autentica e inicia uma sessão; em caso de sucesso, redireciona para `/home`. |
+| `GET` | `/logout` | Público | Encerra a sessão e redireciona para `/login`. |
+| `GET` | `/novo-usuario` | Público | Exibe o formulário de cadastro. |
+| `POST` | `/novo-usuario` | Público | Cadastra um usuário e redireciona para `/login`; e-mails já cadastrados são recusados. |
+| `GET` | `/home` | Autenticado | Exibe a página inicial; sem sessão, redireciona para `/login`. |
 
-<https://www.slimframework.com/docs/v4/start/web-servers.html>
+Mensagens de sucesso e erro são armazenadas na sessão e exibidas uma única vez nas páginas que incluem o componente de alertas. Erros inesperados são registrados na pasta `logs/`; a mensagem apresentada ao usuário inclui o identificador do log.
 
-As configurações corretas dependem do servidor utilizado, como Apache, Nginx ou PHP-FPM. Em geral, o document root deve apontar para a pasta `public`, que contém o arquivo `index.php` da aplicação. Também é necessário configurar o servidor para encaminhar as requisições para esse arquivo e garantir que o PHP e as extensões exigidas estejam habilitados.
-
-Antes da publicação, revise também as variáveis do `.env`, principalmente `APP_ENV`, as credenciais do banco de dados e as permissões das pastas usadas pelo Twig.
-
-## Estrutura principal
+## Organização do projeto
 
 ```text
-config/                 Configurações do banco e do Twig
-database.db             Script SQL de exemplo para criar a tabela usuarios
-public/index.php        Ponto de entrada da aplicação
-src/Controllers/        Controllers
-src/Models/             Models Eloquent
-src/Routes/             Rotas da aplicação
-src/Views/              Templates Twig
-src/Services/           Services para manipulaçao de dados
-.env.example            Exemplo de variáveis de ambiente
+config/                  Inicialização do banco, Twig e tratamento de erros
+database.sql             Criação da tabela usuarios e usuário de demonstração
+public/index.php         Bootstrap da aplicação Slim
+public/.htaccess          Reescrita de URLs para o front controller (Apache)
+src/Controllers/         Controllers de autenticação, usuários e página inicial
+src/Exceptions/          Exceções de domínio para autenticação e usuários
+src/Middlewares/         Proteção de rota e mensagens flash
+src/Models/               Model Eloquent Usuario
+src/Routes/web.php        Definição das rotas HTTP
+src/Services/             Regras de autenticação e operações de usuário
+src/Views/                Templates Twig, layouts e alertas
+logs/                     Arquivos de log da aplicação
 ```
 
-## Exemplo de model e banco de dados
+O `public/index.php` inicia a sessão, carrega o `.env`, inicializa o Eloquent e o Twig, registra middlewares e rotas e então executa a aplicação. O `AuthMiddleware` protege `/home`; após login, apenas o ID, nome e e-mail do usuário são guardados na sessão, cujo identificador é regenerado. O encerramento do login limpa os dados e destrói a sessão.
 
-O projeto inclui o model `App\Models\Usuario` em `src/Models/Usuario.php`. Ele representa a tabela `usuarios` e possui os campos:
+O `UsuarioService` também implementa métodos de listagem paginada, busca, atualização e exclusão. Nesta versão, essas operações não possuem rotas HTTP associadas.
 
-- `id`
-- `nome`
-- `email`
-- `senha`
+## Hospedagem
 
-O arquivo `database.db` contém um script SQL simples para criar essa tabela, incluindo também `created_at` e `updated_at`, usados automaticamente pelo Eloquent.
+Configure o servidor web para usar `public/` como document root e encaminhar URLs não correspondentes a arquivos para `public/index.php`. O arquivo `public/.htaccess` já contém a regra de reescrita para Apache com `mod_rewrite`; em outros servidores, configure a regra equivalente. Consulte a [documentação do Slim sobre servidores web](https://www.slimframework.com/docs/v4/start/web-servers.html).
 
-Execute o conteúdo do arquivo no banco configurado no `.env` antes de utilizar o model. Por exemplo, com MySQL:
-
-```bash
-mysql -u root -p web < database.mysql
-```
-
-O model possui um mutator que aplica `password_hash` automaticamente sempre que uma senha em texto é atribuída ao atributo `senha`. Valores que já possuem hash não são hashados novamente.
-
-Exemplo:
-
-```php
-$usuario = new Usuario();
-$usuario->nome = 'Maria';
-$usuario->email = 'maria@example.com';
-$usuario->senha = 'senha-secreta';
-$usuario->save();
-```
-
-A senha deve ser verificada com `password_verify` e nunca deve ser armazenada em texto puro.
-
-## Criando um novo projeto
-
-Depois da instalação, use esta estrutura como base e adapte-a ao domínio da aplicação:
-
-1. Crie as rotas em `src/Routes`.
-2. Implemente os controllers em `src/Controllers`.
-3. Adicione os templates em `src/Views`.
-4. Crie os models usando o Eloquent conforme a necessidade do projeto.
-5. Mantenha as credenciais e configurações específicas no arquivo `.env`.
+Antes de publicar, configure as credenciais de produção no `.env`, defina `APP_ENV=production`, remova ou altere a conta de demonstração e garanta que `logs/` e o diretório de cache `storage/cache/twig` possam ser gravados pelo processo PHP. Não exponha o arquivo `.env` nem use as credenciais de exemplo em produção.
 
 ## Licença
 
