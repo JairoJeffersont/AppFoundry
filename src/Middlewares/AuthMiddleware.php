@@ -32,7 +32,7 @@ class AuthMiddleware implements MiddlewareInterface {
 
         if (!isset($_SESSION['usuario']['id'])) {
             $response = new Response();
-
+            $_SESSION['flash'] = ['type' => 'info', 'message' => 'Faça login.'];
             return $response->withHeader('Location', '/login')->withStatus(302);
         }
 

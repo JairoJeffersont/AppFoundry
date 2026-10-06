@@ -10,7 +10,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 use JairoJeffersont\EasyLogger\Logger;
 
-
 /**
  * Class AuthController
  *
@@ -65,9 +64,11 @@ class AuthController {
             $this->auth_service->criarSessao($usuario);
             return $response->withHeader('Location', '/home')->withStatus(302);
         } catch (LoginException $e) {
+            $_SESSION['flash'] = ['type' => 'info', 'message' => $e->getMessage()];
             return $response->withHeader('Location', '/login')->withStatus(302);
         } catch (Exception $e) {
-            Logger::newLog(LOG_FOLDER, 'ERROR', $e->getMessage(), 'ERROR');
+            $log_id = Logger::newLog(LOG_FOLDER, 'ERROR', $e->getMessage(), 'ERROR');
+            $_SESSION['flash'] = ['type' => 'danger', 'message' => 'Erro interno do servidor | ' . $log_id];
             return $response->withHeader('Location', '/login')->withStatus(302);
         }
     }

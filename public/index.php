@@ -2,6 +2,8 @@
 
 use Slim\Factory\AppFactory;
 use Slim\Views\TwigMiddleware;
+use App\Middlewares\FlashMiddleware;
+
 
 define('LOG_FOLDER', __DIR__ . '/../logs');
 
@@ -19,6 +21,7 @@ $app = AppFactory::create();
 
 $twigConfig = require __DIR__ . '/../config/twig.php';
 $twig = $twigConfig();
+$app->add(new FlashMiddleware($twig));
 $app->add(TwigMiddleware::create($app, $twig));
 
 $routes = require __DIR__ . '/../src/Routes/web.php';
