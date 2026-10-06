@@ -64,7 +64,8 @@ src/Controllers/        Controllers
 src/Models/             Models Eloquent
 src/Routes/             Rotas da aplicação
 src/Views/              Templates Twig
-.env.example             Exemplo de variáveis de ambiente
+src/Services/           Services para manipulaçao de dados
+.env.example            Exemplo de variáveis de ambiente
 ```
 
 ## Exemplo de model e banco de dados
@@ -81,10 +82,10 @@ O arquivo `database.db` contém um script SQL simples para criar essa tabela, in
 Execute o conteúdo do arquivo no banco configurado no `.env` antes de utilizar o model. Por exemplo, com MySQL:
 
 ```bash
-mysql -u root -p web < database.db
+mysql -u root -p web < database.mysql
 ```
 
-O model possui um mutator que aplica `password_hash` automaticamente sempre que uma senha em texto é atribuída ao atributo `senha`. Valores que já possuem hash não são hashados novamente. Além disso, o campo fica oculto na serialização do model.
+O model possui um mutator que aplica `password_hash` automaticamente sempre que uma senha em texto é atribuída ao atributo `senha`. Valores que já possuem hash não são hashados novamente.
 
 Exemplo:
 
