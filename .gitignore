@@ -3,3 +3,4 @@
 /storage/cache/
 /logs/
 /logs/*
+.DS_Store
