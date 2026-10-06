@@ -4,8 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Usuario extends Model
-{
+class Usuario extends Model {
     protected $table = 'usuarios';
 
     protected $fillable = [
@@ -14,12 +13,7 @@ class Usuario extends Model
         'senha',
     ];
 
-    protected $hidden = [
-        'senha',
-    ];
-
-    public function setSenhaAttribute($value): void
-    {
+    public function setSenhaAttribute(string $value): void {
         $this->attributes['senha'] = password_get_info($value)['algo'] === null
             ? password_hash($value, PASSWORD_DEFAULT)
             : $value;
